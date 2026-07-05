@@ -78,3 +78,29 @@ class Account:
             f"Account Number : {self.acc_no}\n"
             f"Current Balance: {self._balance}"
         )
+    
+    def transfer(self, other_account, amount):
+        """
+        Transfer money from this account to another account.
+        """
+
+        # Destination must be an Account (or subclass).
+        if not isinstance(other_account, Account):
+            raise TypeError("Destination must be an Account.")
+
+        # Reject self-transfer because it has no useful effect and only creates
+        # unnecessary transactions.
+        if other_account is self:
+            raise ValueError("Cannot transfer to the same account.")
+
+        # Withdraw from source account first.
+        self.withdraw(amount)
+
+        try:
+            # Deposit into destination account.
+            other_account.deposit(amount)
+
+        # Catch validation/runtime errors from deposit(), rollback, then re-raise.
+        except (TypeError, ValueError):
+            self.deposit(amount)
+            raise
