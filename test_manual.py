@@ -1,6 +1,7 @@
 from account import Account
 from savings_account import SavingsAccount
 from checking_account import CheckingAccount
+from account_factory import AccountFactory
 
 
 def run_test(test_name, test_func):
@@ -181,6 +182,55 @@ def test_transfer_invalid_destination():
     except TypeError:
         pass
 
+# 16. Factory creates SavingsAccount
+def test_factory_savings():
+    acc = AccountFactory.create_account(
+        "savings",
+        "Ali",
+        "111",
+        interest_rate=0.05
+    )
+
+    assert isinstance(acc, SavingsAccount), (
+        f"Expected SavingsAccount, got {type(acc).__name__}"
+    )
+
+# 17. Factory normalizes uppercase account type
+def test_factory_checking_uppercase():
+    acc = AccountFactory.create_account(
+        "CHECKING",
+        "Ali",
+        "222",
+        overdraft_limit=500
+    )
+
+    assert isinstance(acc, CheckingAccount), (
+        f"Expected CheckingAccount, got {type(acc).__name__}"
+    )
+
+# 18. Missing interest_rate should raise TypeError
+def test_factory_missing_interest_rate():
+    try:
+        AccountFactory.create_account(
+            "savings",
+            "Ali",
+            "333"
+        )
+        raise AssertionError("TypeError was not raised.")
+    except TypeError:
+        pass
+
+# 19. Invalid account type should raise ValueError
+def test_factory_invalid_account_type():
+    try:
+        AccountFactory.create_account(
+            "crypto",
+            "Ali",
+            "444"
+        )
+        raise AssertionError("ValueError was not raised.")
+    except ValueError:
+        pass
 
 if __name__ == "__main__":
     print("=== Manual Account Tests ===\n")
@@ -202,5 +252,9 @@ if __name__ == "__main__":
     run_test("Transfer updates both balances", test_transfer_success)
     run_test("Transfer rollback restores source balance", test_transfer_rollback)
     run_test("Transfer with invalid destination raises TypeError", test_transfer_invalid_destination)
+    run_test("Factory creates SavingsAccount", test_factory_savings)
+    run_test("Factory normalizes uppercase input", test_factory_checking_uppercase)
+    run_test("Factory missing interest_rate raises TypeError", test_factory_missing_interest_rate)
+    run_test("Factory invalid account type raises ValueError", test_factory_invalid_account_type)
     
     print("\n=== Testing Complete ===")
