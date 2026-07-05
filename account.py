@@ -24,7 +24,7 @@ class Account:
         """Validate that amount is a numeric value (not bool)."""
         if isinstance(amount, bool) or not isinstance(amount, (int, float)):
             raise TypeError("Amount must be a number.")
-        
+
     @property
     def balance(self):
         """Read-only access to balance."""
@@ -78,7 +78,7 @@ class Account:
             f"Account Number : {self.acc_no}\n"
             f"Current Balance: {self._balance}"
         )
-    
+
     def transfer(self, other_account, amount):
         """
         Transfer money from this account to another account.
@@ -104,3 +104,16 @@ class Account:
         except (TypeError, ValueError):
             self.deposit(amount)
             raise
+
+    def to_dict(self):
+        return {
+            "type": "account",
+            "owner_name": self.owner_name,
+            "acc_no": self.acc_no,
+            "balance": self._balance,
+            "transaction_history": self.transaction_history,
+        }
+
+    def _restore_state(self, balance, transaction_history):
+        self._balance = balance
+        self.transaction_history = transaction_history

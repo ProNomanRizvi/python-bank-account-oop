@@ -232,6 +232,27 @@ def test_factory_invalid_account_type():
     except ValueError:
         pass
 
+# 20. Factory round-trip (object -> dict -> object)
+def test_factory_round_trip():
+    acc = AccountFactory.create_account(
+        "savings",
+        "Ali",
+        "111",
+        interest_rate=0.05
+    )
+
+    acc.deposit(1000)
+    acc.add_interest()
+
+    data = acc.to_dict()
+    restored = AccountFactory.create_from_dict(data)
+
+    assert restored.balance == acc.balance
+    assert restored.owner_name == acc.owner_name
+    assert restored.acc_no == acc.acc_no
+    assert restored.interest_rate == acc.interest_rate
+    assert len(restored.transaction_history) == len(acc.transaction_history)
+
 if __name__ == "__main__":
     print("=== Manual Account Tests ===\n")
 
@@ -256,5 +277,6 @@ if __name__ == "__main__":
     run_test("Factory normalizes uppercase input", test_factory_checking_uppercase)
     run_test("Factory missing interest_rate raises TypeError", test_factory_missing_interest_rate)
     run_test("Factory invalid account type raises ValueError", test_factory_invalid_account_type)
+    run_test("Factory round-trip serialization", test_factory_round_trip)
     
     print("\n=== Testing Complete ===")

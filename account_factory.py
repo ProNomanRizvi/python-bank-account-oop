@@ -11,7 +11,10 @@ class AccountFactory:
 
         account_type = account_type.strip().lower()
 
-        if account_type == "savings":
+        if account_type == "account":
+            return Account(owner_name, acc_no)
+
+        elif account_type == "savings":
             if "interest_rate" not in kwargs:
                 raise TypeError("Missing required argument: interest_rate")
 
@@ -33,5 +36,44 @@ class AccountFactory:
 
         raise ValueError(
             f"Invalid account type: {account_type!r}. "
-            "Expected 'savings' or 'checking'."
+            "Expected 'account', 'savings' or 'checking'."
         )
+
+    @staticmethod
+    def create_from_dict(data):
+        account_type = data["type"]
+        owner_name = data["owner_name"]
+        acc_no = data["acc_no"]
+
+        if account_type == "account":
+            account = AccountFactory.create_account(
+                "account",
+                owner_name,
+                acc_no
+            )
+
+        elif account_type == "savings":
+            account = AccountFactory.create_account(
+                "savings",
+                owner_name,
+                acc_no,
+                interest_rate=data["interest_rate"]
+            )
+
+        elif account_type == "checking":
+            account = AccountFactory.create_account(
+                "checking",
+                owner_name,
+                acc_no,
+                overdraft_limit=data["overdraft_limit"]
+            )
+
+        else:
+            raise ValueError(f"Invalid account type: {account_type!r}")
+
+        account._restore_state(
+            data["balance"],
+            data["transaction_history"]
+        )
+
+        return account

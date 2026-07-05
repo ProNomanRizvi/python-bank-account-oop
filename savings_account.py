@@ -22,3 +22,9 @@ class SavingsAccount(Account):
             self.transaction_history[-1]["type"] = "interest"
 
         return interest
+    
+    def to_dict(self):
+        data = super().to_dict()
+        data["type"] = "savings"
+        data["interest_rate"] = self.interest_rate
+        return data

@@ -40,3 +40,9 @@ class CheckingAccount(Account):
             "timestamp": datetime.now().isoformat(),
             "balance_after": self._balance
         })
+
+    def to_dict(self):
+        data = super().to_dict()
+        data["type"] = "checking"
+        data["overdraft_limit"] = self.overdraft_limit
+        return data
