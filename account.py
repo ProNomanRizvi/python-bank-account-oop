@@ -20,6 +20,11 @@ class Account:
         self._balance = balance
         self.transaction_history = []
 
+    def validate_amount(self, amount):
+        """Validate that amount is a numeric value (not bool)."""
+        if isinstance(amount, bool) or not isinstance(amount, (int, float)):
+            raise TypeError("Amount must be a number.")
+        
     @property
     def balance(self):
         """Read-only access to balance."""
@@ -27,8 +32,7 @@ class Account:
 
     def deposit(self, amount):
         """Deposit money into the account."""
-        if isinstance(amount, bool) or not isinstance(amount, (int, float)):
-            raise TypeError("Deposit amount must be a number.")
+        self.validate_amount(amount)
 
         if amount <= 0:
             raise ValueError("Deposit amount must be greater than zero.")
@@ -44,8 +48,7 @@ class Account:
 
     def withdraw(self, amount):
         """Withdraw money from the account."""
-        if isinstance(amount, bool) or not isinstance(amount, (int, float)):
-            raise TypeError("Withdrawal amount must be a number.")
+        self.validate_amount(amount)
 
         if amount < 0:
             raise ValueError("Withdrawal amount cannot be negative.")
