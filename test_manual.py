@@ -1,5 +1,6 @@
 from account import Account
 from savings_account import SavingsAccount
+from checking_account import CheckingAccount
 
 
 def run_test(test_name, test_func):
@@ -89,6 +90,55 @@ def test_interest_transaction_type():
         f"Expected transaction type 'interest', got {last_transaction['type']}"
     )
 
+# 9. Normal withdraw within available balance
+def test_checking_withdraw_normal():
+    acc = CheckingAccount("Ali", "12345", 500)
+    acc.deposit(1000)
+
+    acc.withdraw(400)
+
+    assert acc.balance == 600, f"Expected balance 600, got {acc.balance}"
+
+
+# 10. Withdraw using overdraft (should not raise an error)
+def test_checking_overdraft_within_limit():
+    acc = CheckingAccount("Ali", "12345", 500)
+    acc.deposit(100)
+
+    acc.withdraw(400)  # Balance becomes -300
+
+    assert acc.balance == -300, f"Expected balance -300, got {acc.balance}"
+
+
+# 11. Withdraw exceeding overdraft limit
+def test_checking_overdraft_exceeded():
+    acc = CheckingAccount("Ali", "12345", 500)
+    acc.deposit(100)
+
+    try:
+        acc.withdraw(700)  # Available = 100 + 500 = 600
+        raise AssertionError("ValueError was not raised.")
+    except ValueError:
+        pass
+
+# 12. Only the first crossing into negative balance is tagged as "overdraft"
+def test_overdraft_transaction_type():
+    acc = CheckingAccount("Ali", "12345", 500)
+
+    acc.deposit(100)
+
+    # First withdrawal crosses into negative balance
+    acc.withdraw(200)
+    assert acc.transaction_history[-1]["type"] == "overdraft", (
+        f"Expected 'overdraft', got {acc.transaction_history[-1]['type']}"
+    )
+
+    # Second withdrawal starts from an already-negative balance
+    acc.withdraw(50)
+    assert acc.transaction_history[-1]["type"] == "withdraw", (
+        f"Expected 'withdraw', got {acc.transaction_history[-1]['type']}"
+    )
+
 if __name__ == "__main__":
     print("=== Manual Account Tests ===\n")
 
@@ -100,5 +150,11 @@ if __name__ == "__main__":
     run_test("add_interest() updates balance", test_add_interest)
     run_test("add_interest() on zero balance returns 0", test_add_interest_zero_balance)
     run_test("Transaction history records 'interest'", test_interest_transaction_type)
-
+    run_test("CheckingAccount normal withdraw", test_checking_withdraw_normal)
+    run_test("CheckingAccount overdraft within limit", test_checking_overdraft_within_limit)
+    run_test("CheckingAccount overdraft limit exceeded", test_checking_overdraft_exceeded)
+    run_test(
+    "Only first negative crossing is tagged as overdraft",
+    test_overdraft_transaction_type)
+    
     print("\n=== Testing Complete ===")
