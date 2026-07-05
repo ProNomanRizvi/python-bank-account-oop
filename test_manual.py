@@ -2,6 +2,9 @@ from account import Account
 from savings_account import SavingsAccount
 from checking_account import CheckingAccount
 from account_factory import AccountFactory
+from persistence import save_accounts_to_json, load_accounts_from_json
+from account_factory import AccountFactory
+import os
 
 
 def run_test(test_name, test_func):
@@ -253,6 +256,85 @@ def test_factory_round_trip():
     assert restored.interest_rate == acc.interest_rate
     assert len(restored.transaction_history) == len(acc.transaction_history)
 
+# 21. Save -> Load round-trip
+def test_json_persistence_round_trip():
+    filepath = "test_accounts.json"
+
+    acc1 = AccountFactory.create_account(
+        "savings",
+        "Ali",
+        "111",
+        interest_rate=0.05
+    )
+    acc1.deposit(1000)
+    acc1.add_interest()
+
+    acc2 = AccountFactory.create_account(
+        "checking",
+        "Ahmed",
+        "222",
+        overdraft_limit=500
+    )
+    acc2.deposit(800)
+    acc2.withdraw(1000)
+
+    acc3 = AccountFactory.create_account(
+        "account",
+        "Sara",
+        "333"
+    )
+    acc3.deposit(250)
+
+    original_accounts = [acc1, acc2, acc3]
+
+    save_accounts_to_json(original_accounts, filepath)
+    loaded_accounts = load_accounts_from_json(filepath)
+
+    assert len(loaded_accounts) == len(original_accounts)
+
+    for original, loaded in zip(original_accounts, loaded_accounts):
+        assert type(loaded) is type(original)
+        assert loaded.owner_name == original.owner_name
+        assert loaded.acc_no == original.acc_no
+        assert loaded.balance == original.balance
+        assert loaded.transaction_history == original.transaction_history
+
+        if hasattr(original, "interest_rate"):
+            assert loaded.interest_rate == original.interest_rate
+
+        if hasattr(original, "overdraft_limit"):
+            assert loaded.overdraft_limit == original.overdraft_limit
+
+    os.remove(filepath)
+
+# 22. Corrupt JSON should raise ValueError
+def test_json_corrupt_file():
+    filepath = "corrupt_accounts.json"
+
+    with open(filepath, "w") as file:
+        file.write("{ invalid json")
+
+    try:
+        load_accounts_from_json(filepath)
+        raise AssertionError("ValueError was not raised.")
+    except ValueError:
+        pass
+    finally:
+        os.remove(filepath)
+
+# 23. Missing JSON file returns empty list
+def test_json_missing_file():
+    filepath = "file_that_does_not_exist.json"
+
+    if os.path.exists(filepath):
+        os.remove(filepath)
+
+    accounts = load_accounts_from_json(filepath)
+
+    assert accounts == [], (
+        f"Expected empty list, got {accounts}"
+    )
+
 if __name__ == "__main__":
     print("=== Manual Account Tests ===\n")
 
@@ -278,5 +360,8 @@ if __name__ == "__main__":
     run_test("Factory missing interest_rate raises TypeError", test_factory_missing_interest_rate)
     run_test("Factory invalid account type raises ValueError", test_factory_invalid_account_type)
     run_test("Factory round-trip serialization", test_factory_round_trip)
+    run_test("JSON persistence round-trip", test_json_persistence_round_trip)
+    run_test("Corrupt JSON raises ValueError", test_json_corrupt_file)
+    run_test("Missing JSON file returns empty list", test_json_missing_file)
     
     print("\n=== Testing Complete ===")
