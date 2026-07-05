@@ -139,6 +139,49 @@ def test_overdraft_transaction_type():
         f"Expected 'withdraw', got {acc.transaction_history[-1]['type']}"
     )
 
+# 13. Normal transfer between accounts
+def test_transfer_success():
+    acc1 = Account("Ali", "111", 1000)
+    acc2 = Account("Ahmed", "222", 500)
+
+    acc1.transfer(acc2, 300)
+
+    assert acc1.balance == 700, f"Expected 700, got {acc1.balance}"
+    assert acc2.balance == 800, f"Expected 800, got {acc2.balance}"
+
+# Helper class to simulate deposit failure
+class BrokenAccount(Account):
+    def deposit(self, amount):
+        raise ValueError("Simulated deposit failure")
+
+
+# 14. Transfer rollback
+def test_transfer_rollback():
+    source = Account("Ali", "111", 1000)
+    destination = BrokenAccount("Ahmed", "222")
+
+    try:
+        source.transfer(destination, 300)
+        raise AssertionError("ValueError was not raised.")
+    except ValueError:
+        pass
+
+    # Money should be restored to the source account.
+    assert source.balance == 1000, (
+        f"Expected rollback to restore balance to 1000, got {source.balance}"
+    )
+
+# 15. Invalid destination object
+def test_transfer_invalid_destination():
+    source = Account("Ali", "111", 1000)
+
+    try:
+        source.transfer("not an account", 100)
+        raise AssertionError("TypeError was not raised.")
+    except TypeError:
+        pass
+
+
 if __name__ == "__main__":
     print("=== Manual Account Tests ===\n")
 
@@ -156,5 +199,8 @@ if __name__ == "__main__":
     run_test(
     "Only first negative crossing is tagged as overdraft",
     test_overdraft_transaction_type)
+    run_test("Transfer updates both balances", test_transfer_success)
+    run_test("Transfer rollback restores source balance", test_transfer_rollback)
+    run_test("Transfer with invalid destination raises TypeError", test_transfer_invalid_destination)
     
     print("\n=== Testing Complete ===")
