@@ -46,6 +46,23 @@ Balance is stored as `_balance` and exposed only through a read-only `@property`
 **Serialization Design**
 Each class implements `to_dict()` using `super().to_dict()` to avoid duplicating common fields, then layers on its own type-specific data (`interest_rate`, `overdraft_limit`). State restoration during loading is handled by a `_restore_state()` method inside `Account` itself — keeping direct manipulation of private attributes inside the class instead of external persistence code.
 
+## Screenshots
+
+**Test Suite — All 23 Tests Passing**
+![Test Suite Passing](screenshots/test_suite_passing.png)
+
+**Automated Demo (`main.py`) — Full Feature Walkthrough**
+![Main Demo](screenshots/main_demo.png)
+
+**Interactive CLI — Creating an Account**
+![Create Account](screenshots/create_account.png)
+
+**Interactive CLI — Invalid Input Handling & Save**
+![Invalid Input and Save](screenshots/handle_invalid_input_and_save.png)
+
+**Interactive CLI — Persistence Verified After Restart**
+![Accounts List After Restart](screenshots/accounts_list.png)
+
 ## Requirements
 
 - Python 3.10+ (developed and tested on Ubuntu, Python 3.14)
