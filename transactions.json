@@ -8,19 +8,19 @@
             {
                 "type": "deposit",
                 "amount": 1000,
-                "timestamp": "2026-07-05T15:49:38.476500",
+                "timestamp": "2026-07-06T08:54:13.861149",
                 "balance_after": 1000
             },
             {
                 "type": "interest",
                 "amount": 50.0,
-                "timestamp": "2026-07-05T15:49:38.476539",
+                "timestamp": "2026-07-06T08:54:13.861172",
                 "balance_after": 1050.0
             },
             {
                 "type": "deposit",
                 "amount": 200,
-                "timestamp": "2026-07-05T15:49:38.476565",
+                "timestamp": "2026-07-06T08:54:13.861188",
                 "balance_after": 1250.0
             }
         ],
@@ -35,13 +35,13 @@
             {
                 "type": "deposit",
                 "amount": 800,
-                "timestamp": "2026-07-05T15:49:38.476547",
+                "timestamp": "2026-07-06T08:54:13.861176",
                 "balance_after": 800
             },
             {
                 "type": "overdraft",
                 "amount": 1000,
-                "timestamp": "2026-07-05T15:49:38.476553",
+                "timestamp": "2026-07-06T08:54:13.861180",
                 "balance_after": -200
             }
         ],
@@ -56,36 +56,23 @@
             {
                 "type": "deposit",
                 "amount": 500,
-                "timestamp": "2026-07-05T15:49:38.476557",
+                "timestamp": "2026-07-06T08:54:13.861182",
                 "balance_after": 500
             },
             {
                 "type": "withdraw",
                 "amount": 200,
-                "timestamp": "2026-07-05T15:49:38.476561",
+                "timestamp": "2026-07-06T08:54:13.861186",
                 "balance_after": 300
             }
         ]
     },
     {
         "type": "savings",
-        "owner_name": "Noman Rizvi",
-        "acc_no": "0000852",
-        "balance": 400.0,
-        "transaction_history": [
-            {
-                "type": "deposit",
-                "amount": 100.0,
-                "timestamp": "2026-07-06T08:38:01.451528",
-                "balance_after": 100.0
-            },
-            {
-                "type": "deposit",
-                "amount": 300.0,
-                "timestamp": "2026-07-06T08:38:59.282201",
-                "balance_after": 400.0
-            }
-        ],
-        "interest_rate": 0.005
+        "owner_name": "Ali",
+        "acc_no": "12345",
+        "balance": 0,
+        "transaction_history": [],
+        "interest_rate": 0.05
     }
 ]
