@@ -104,4 +104,4 @@ All 23 tests print `[PASS]`/`[FAIL]` results, covering:
 
 **Noman Rizvi**
 BS Software Engineering, University of Agriculture, Faisalabad
-GitHub: [ProNomanRizvi](https://github.com/ProNomanRizvi) · Kaggle/Hugging Face: [ProNomanRizvi](https://huggingface.co/rizviml)
+GitHub: [ProNomanRizvi](https://github.com/ProNomanRizvi) · Kaggle/Hugging Face: [ProNomanRizvi](https://huggingface.co/ProNomanRizvi)
