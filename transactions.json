@@ -66,5 +66,26 @@
                 "balance_after": 300
             }
         ]
+    },
+    {
+        "type": "savings",
+        "owner_name": "Noman Rizvi",
+        "acc_no": "0000852",
+        "balance": 400.0,
+        "transaction_history": [
+            {
+                "type": "deposit",
+                "amount": 100.0,
+                "timestamp": "2026-07-06T08:38:01.451528",
+                "balance_after": 100.0
+            },
+            {
+                "type": "deposit",
+                "amount": 300.0,
+                "timestamp": "2026-07-06T08:38:59.282201",
+                "balance_after": 400.0
+            }
+        ],
+        "interest_rate": 0.005
     }
 ]

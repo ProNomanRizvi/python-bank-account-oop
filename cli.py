@@ -1,4 +1,5 @@
 from account_factory import AccountFactory
+from checking_account import CheckingAccount
 from persistence import (
     save_accounts_to_json,
     load_accounts_from_json,
@@ -360,8 +361,8 @@ def statistics_flow(accounts):
     )
 
     checking = sum(
-        hasattr(acc, "overdraft_limit")
-        for acc in accounts.values()
+    isinstance(acc, CheckingAccount)
+    for acc in accounts.values()
     )
 
     plain = total_accounts - savings - checking
