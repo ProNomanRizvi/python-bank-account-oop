@@ -3,7 +3,6 @@ from savings_account import SavingsAccount
 from checking_account import CheckingAccount
 from account_factory import AccountFactory
 from persistence import save_accounts_to_json, load_accounts_from_json
-from account_factory import AccountFactory
 import os
 
 
@@ -13,8 +12,10 @@ def run_test(test_name, test_func):
         print(f"[PASS] {test_name}")
     except AssertionError as e:
         print(f"[FAIL] {test_name} -> {e}")
+        raise
     except Exception as e:
         print(f"[FAIL] {test_name} -> Unexpected {type(e).__name__}: {e}")
+        raise
 
 
 # 1. Normal account + deposit(500)

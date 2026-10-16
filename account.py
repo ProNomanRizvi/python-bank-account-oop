@@ -1,4 +1,6 @@
+from copy import deepcopy
 from datetime import datetime
+from math import isfinite
 
 
 class Account:
@@ -12,6 +14,9 @@ class Account:
         if isinstance(balance, bool) or not isinstance(balance, (int, float)):
             raise TypeError("Balance must be a number.")
 
+        if isinstance(balance, float) and not isfinite(balance):
+            raise ValueError("Balance must be finite.")
+
         if balance < 0:
             raise ValueError("Initial balance cannot be negative.")
 
@@ -21,9 +26,11 @@ class Account:
         self.transaction_history = []
 
     def _validate_amount(self, amount):
-        """Validate that amount is a numeric value (not bool)."""
+        """Validate that amount is numeric and finite (not bool)."""
         if isinstance(amount, bool) or not isinstance(amount, (int, float)):
             raise TypeError("Amount must be a number.")
+        if isinstance(amount, float) and not isfinite(amount):
+            raise ValueError("Amount must be finite.")
 
     @property
     def balance(self):
@@ -37,7 +44,10 @@ class Account:
         if amount <= 0:
             raise ValueError("Deposit amount must be greater than zero.")
 
-        self._balance += amount
+        new_balance = self._balance + amount
+        if isinstance(new_balance, float) and not isfinite(new_balance):
+            raise ValueError("Resulting balance must be finite.")
+        self._balance = new_balance
 
         self.transaction_history.append({
             "type": "deposit",
@@ -80,29 +90,27 @@ class Account:
         )
 
     def transfer(self, other_account, amount):
-        """
-        Transfer money from this account to another account.
-        """
-
-        # Destination must be an Account (or subclass).
+        """Transfer between two Account objects with in-memory rollback."""
         if not isinstance(other_account, Account):
             raise TypeError("Destination must be an Account.")
-
-        # Reject self-transfer because it has no useful effect and only creates
-        # unnecessary transactions.
         if other_account is self:
             raise ValueError("Cannot transfer to the same account.")
 
-        # Withdraw from source account first.
-        self.withdraw(amount)
+        source_balance = self._balance
+        destination_balance = other_account._balance
+        source_history = deepcopy(self.transaction_history)
+        destination_history = deepcopy(other_account.transaction_history)
 
         try:
-            # Deposit into destination account.
+            self.withdraw(amount)
             other_account.deposit(amount)
-
-        # Catch validation/runtime errors from deposit(), rollback, then re-raise.
-        except (TypeError, ValueError):
-            self.deposit(amount)
+        except Exception:
+            # Restore both sides, including transaction logs, even if a subclass
+            # changed its balance or history before raising.
+            self._balance = source_balance
+            self.transaction_history = source_history
+            other_account._balance = destination_balance
+            other_account.transaction_history = destination_history
             raise
 
     def to_dict(self):
@@ -115,5 +123,10 @@ class Account:
         }
 
     def _restore_state(self, balance, transaction_history):
+        self._validate_amount(balance)
+        if balance < -getattr(self, "overdraft_limit", 0):
+            raise ValueError("Stored balance exceeds allowed overdraft.")
+        if not isinstance(transaction_history, list):
+            raise ValueError("Stored transaction history must be a list.")
         self._balance = balance
         self.transaction_history = transaction_history

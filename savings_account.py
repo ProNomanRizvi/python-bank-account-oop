@@ -4,6 +4,9 @@ from account import Account
 class SavingsAccount(Account):
     def __init__(self, owner_name, account_number, interest_rate):
         super().__init__(owner_name, account_number)
+        self._validate_amount(interest_rate)
+        if interest_rate < 0:
+            raise ValueError("Interest rate cannot be negative.")
         self.interest_rate = interest_rate
 
     def add_interest(self):

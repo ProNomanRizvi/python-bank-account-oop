@@ -5,6 +5,9 @@ from datetime import datetime
 class CheckingAccount(Account):
     def __init__(self, owner_name, account_number, overdraft_limit):
         super().__init__(owner_name, account_number)
+        self._validate_amount(overdraft_limit)
+        if overdraft_limit < 0:
+            raise ValueError("Overdraft limit cannot be negative.")
         self.overdraft_limit = overdraft_limit
 
     def withdraw(self, amount):
